@@ -17,15 +17,16 @@ export default function OsmakDietCalculator() {
   };
 
   const calculate = () => {
-    const baseIntake = { mládě: 25, dospělý: 20, senior: 18, 'březí/kojící': 30 };
+    const baseIntake = { mládě: 8, dospělý: 7, senior: 6, 'březí/kojící': 10 };
     const activityMod = { nízká: 0.9, střední: 1.0, vysoká: 1.1 };
 
     const output = osmaci.map(({ name, age, condition, activity }) => {
-      const base = baseIntake[condition !== 'zdravý' ? condition : age] || 20;
+      const base = baseIntake[condition !== 'zdravý' ? condition : age] || 7;
       const total = base * (activityMod[activity] || 1);
 
       const mix1_flowers = total * 0.8;
-      const mix1_seeds = total * 0.2;
+      const mix1_seeds = total * 0.15;
+      const mix1_grains = total * 0.05;
 
       const mix2_flowers = total * 0.8;
       const mix2_seeds = total * 0.1;
@@ -36,6 +37,7 @@ export default function OsmakDietCalculator() {
         daily: total.toFixed(1),
         mix1_flowers: (mix1_flowers * days).toFixed(1),
         mix1_seeds: (mix1_seeds * days).toFixed(1),
+        mix1_grains: (mix1_grains * days).toFixed(1),
         mix2_flowers: (mix2_flowers * days).toFixed(1),
         mix2_seeds: (mix2_seeds * days).toFixed(1),
         mix2_veg: (mix2_veg * days).toFixed(1)
@@ -101,19 +103,18 @@ export default function OsmakDietCalculator() {
           <table border="1" cellPadding="6">
             <thead>
               <tr>
-                <th>Jméno</th>
-                <th>Denní dávka (g)</th>
-                <th colSpan="2">Mix 1: 80% listy + 20% semena</th>
+                <th rowSpan="2">Jméno</th>
+                <th rowSpan="2">Denní dávka (g)</th>
+                <th colSpan="3">Mix 1: 80% listy + 15% semena + 5% obilniny</th>
                 <th colSpan="3">Mix 2: 80% listy + 10% semena + 10% zelenina</th>
               </tr>
               <tr>
-                <th></th>
-                <th></th>
-                <th>Listy/květy (g)</th>
-                <th>Semena (g)</th>
-                <th>Listy/květy (g)</th>
-                <th>Semena (g)</th>
-                <th>Zelenina (g)</th>
+                <th>Listy/květy</th>
+                <th>Semena</th>
+                <th>Obilniny</th>
+                <th>Listy/květy</th>
+                <th>Semena</th>
+                <th>Zelenina</th>
               </tr>
             </thead>
             <tbody>
@@ -123,6 +124,7 @@ export default function OsmakDietCalculator() {
                   <td>{r.daily}</td>
                   <td>{r.mix1_flowers}</td>
                   <td>{r.mix1_seeds}</td>
+                  <td>{r.mix1_grains}</td>
                   <td>{r.mix2_flowers}</td>
                   <td>{r.mix2_seeds}</td>
                   <td>{r.mix2_veg}</td>
@@ -133,6 +135,7 @@ export default function OsmakDietCalculator() {
                 <td></td>
                 <td><strong>{totalWeight('mix1_flowers')}</strong></td>
                 <td><strong>{totalWeight('mix1_seeds')}</strong></td>
+                <td><strong>{totalWeight('mix1_grains')}</strong></td>
                 <td><strong>{totalWeight('mix2_flowers')}</strong></td>
                 <td><strong>{totalWeight('mix2_seeds')}</strong></td>
                 <td><strong>{totalWeight('mix2_veg')}</strong></td>
