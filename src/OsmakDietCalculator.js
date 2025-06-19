@@ -1,10 +1,4 @@
-
 import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export default function OsmakDietCalculator() {
   const [osmaci, setOsmaci] = useState([
@@ -13,9 +7,9 @@ export default function OsmakDietCalculator() {
   const [results, setResults] = useState([]);
 
   const handleChange = (index, field, value) => {
-    const newOsmaci = [...osmaci];
-    newOsmaci[index][field] = value;
-    setOsmaci(newOsmaci);
+    const updated = [...osmaci];
+    updated[index][field] = value;
+    setOsmaci(updated);
   };
 
   const addOsmak = () => {
@@ -47,68 +41,67 @@ export default function OsmakDietCalculator() {
   };
 
   return (
-    <div className="space-y-4 p-4">
-      {osmaci.map((osmak, index) => (
-        <Card key={index}>
-          <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <Label>Jméno</Label>
-              <Input value={osak.name} onChange={(e) => handleChange(index, 'name', e.target.value)} />
-            </div>
-            <div>
-              <Label>Věk</Label>
-              <select className="w-full" value={osmak.age} onChange={(e) => handleChange(index, 'age', e.target.value)}>
-                <option value="mládě">mládě</option>
-                <option value="dospělý">dospělý</option>
-                <option value="senior">senior</option>
-              </select>
-            </div>
-            <div>
-              <Label>Stav</Label>
-              <select className="w-full" value={osmak.condition} onChange={(e) => handleChange(index, 'condition', e.target.value)}>
-                <option value="zdravý">zdravý</option>
-                <option value="březí/kojící">březí/kojící</option>
-              </select>
-            </div>
-            <div>
-              <Label>Aktivita</Label>
-              <select className="w-full" value={osmak.activity} onChange={(e) => handleChange(index, 'activity', e.target.value)}>
-                <option value="nízká">nízká</option>
-                <option value="střední">střední</option>
-                <option value="vysoká">vysoká</option>
-              </select>
-            </div>
-          </CardContent>
-        </Card>
+    <div>
+      {osmaci.map((o, i) => (
+        <div key={i} style={{ marginBottom: '1rem', border: '1px solid #ccc', padding: '10px' }}>
+          <div>
+            <label>Jméno: </label>
+            <input value={o.name} onChange={(e) => handleChange(i, 'name', e.target.value)} />
+          </div>
+          <div>
+            <label>Věk: </label>
+            <select value={o.age} onChange={(e) => handleChange(i, 'age', e.target.value)}>
+              <option value="mládě">mládě</option>
+              <option value="dospělý">dospělý</option>
+              <option value="senior">senior</option>
+            </select>
+          </div>
+          <div>
+            <label>Stav: </label>
+            <select value={o.condition} onChange={(e) => handleChange(i, 'condition', e.target.value)}>
+              <option value="zdravý">zdravý</option>
+              <option value="březí/kojící">březí/kojící</option>
+            </select>
+          </div>
+          <div>
+            <label>Aktivita: </label>
+            <select value={o.activity} onChange={(e) => handleChange(i, 'activity', e.target.value)}>
+              <option value="nízká">nízká</option>
+              <option value="střední">střední</option>
+              <option value="vysoká">vysoká</option>
+            </select>
+          </div>
+        </div>
       ))}
-      <Button onClick={addOsmak}>Přidat dalšího osmáka</Button>
-      <Button onClick={calculate} className="ml-2">Spočítat dávky</Button>
+
+      <button onClick={addOsmak}>Přidat dalšího osmáka</button>
+      <button onClick={calculate} style={{ marginLeft: '10px' }}>Spočítat dávky</button>
 
       {results.length > 0 && (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Jméno</TableHead>
-              <TableHead>Celkem (g)</TableHead>
-              <TableHead>Seno</TableHead>
-              <TableHead>Byliny</TableHead>
-              <TableHead>Granule</TableHead>
-              <TableHead>Pamlsky</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {results.map((res, i) => (
-              <TableRow key={i}>
-                <TableCell>{res.name}</TableCell>
-                <TableCell>{res.total}</TableCell>
-                <TableCell>{res.seno}</TableCell>
-                <TableCell>{res.byliny}</TableCell>
-                <TableCell>{res.granule}</TableCell>
-                <TableCell>{res.pamlsky}</TableCell>
-              </TableRow>
+        <table border="1" cellPadding="6" style={{ marginTop: '20px' }}>
+          <thead>
+            <tr>
+              <th>Jméno</th>
+              <th>Celkem (g)</th>
+              <th>Seno</th>
+              <th>Byliny</th>
+              <th>Granule</th>
+              <th>Pamlsky</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results.map((r, i) => (
+              <tr key={i}>
+                <td>{r.name}</td>
+                <td>{r.total}</td>
+                <td>{r.seno}</td>
+                <td>{r.byliny}</td>
+                <td>{r.granule}</td>
+                <td>{r.pamlsky}</td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
       )}
     </div>
   );

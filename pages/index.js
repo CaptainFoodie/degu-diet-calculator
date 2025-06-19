@@ -7,8 +7,8 @@ export default function Home() {
       <Head>
         <title>Osmák Dietní Kalkulačka</title>
       </Head>
-      <main className="p-4">
-        <h1 className="text-2xl font-bold mb-4">Kalkulačka denního krmení pro osmáky</h1>
+      <main style={{ padding: '20px', fontFamily: 'sans-serif' }}>
+        <h1 style={{ fontSize: '24px', fontWeight: 'bold' }}>Kalkulačka denního krmení pro osmáky</h1>
         <OsmakDietCalculator />
       </main>
     </div>
