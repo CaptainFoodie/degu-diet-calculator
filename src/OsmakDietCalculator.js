@@ -1,0 +1,1 @@
+export default function OsmakDietCalculator() { return <div>Kalkulačka funguje!</div>; }
