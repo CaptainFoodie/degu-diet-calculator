@@ -5,11 +5,11 @@ export default function Home() {
   return (
     <div>
       <Head>
-        <title>Osmák Dietní Kalkulačka v2</title>
+        <title>Osmák Dietní Kalkulačka</title>
       </Head>
       <main style={{ padding: '20px', fontFamily: 'sans-serif' }}>
         <h1 style={{ fontSize: '24px', fontWeight: 'bold' }}>
-          Kalkulačka denního krmení pro osmáky – verze 2 + Generátor směsí
+          Kalkulačka krmiva pro osmáky + generátor sezónních směsí
         </h1>
         <OsmakDietCalculator />
       </main>
