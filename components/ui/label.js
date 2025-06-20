@@ -1,1 +1,0 @@
-// label.js content placeholder

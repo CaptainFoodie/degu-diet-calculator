@@ -1,1 +1,0 @@
-// button.js content placeholder
