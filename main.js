@@ -1,1 +1,1 @@
-console.log('Degu diet logic here');
+// React entry point
