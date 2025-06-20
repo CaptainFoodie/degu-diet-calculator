@@ -6,7 +6,7 @@ import Button from "../components/ui/button";
 import Input from "../components/ui/input";
 import Label from "../components/ui/label";
 import { exportToPDF } from "../utils/pdfExport";
-import seasonalData from "../data/ingredient_season_db_expanded.json";
+import seasonalData from "./data/ingredient_season_db_expanded.json";
 
 export default function OsmakDietCalculator() {
   const [season, setSeason] = useState("jaro");
