@@ -78,7 +78,7 @@ export default function OsmakDietCalculator() {
               {mix2.map((item, idx) => (
                 <li
                   key={idx}
-                  className={\`\${lockedMix2.includes(item) ? "text-blue-600 font-bold" : ""} cursor-pointer\`}
+                  className={`${lockedMix2.includes(item) ? "text-blue-600 font-bold" : ""} cursor-pointer`}
                   onClick={() => toggleLock(item, mix2, setLockedMix2, lockedMix2)}
                 >
                   {item} {lockedMix2.includes(item) && "🔒"}
