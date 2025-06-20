@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulačka dávky krmení pro Osmáky</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1, h2 {
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        .mix-info {
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .section {
+            padding: 40px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .form-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        input, select {
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            width: 150px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .results-table {
+            background: #f8f9fa;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: 500;
+        }
+
+        tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .generator-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .season-input {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: #333;
+            font-weight: 700;
+        }
+
+        .mixes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .mix-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .mix-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .mix-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #4facfe;
+        }
+
+        .ingredient-category {
+            margin-bottom: 20px;
+        }
+
+        .category-title {
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .ingredient {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .ingredient:last-child {
+            border-bottom: none;
+        }
+
+        .ingredient-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .ingredient-amount {
+            font-weight: 700;
+            color: #764ba2;
+        }
+
+        @media (max-width: 768px) {
+            .form-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .form-item {
+                width: 100%;
+            }
+
+            input, select {
+                width: 100%;
+            }
+
+            .mixes-container {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Kalkulačka dávky krmení pro Osmáky</h1>
+            <div class="mix-info">
+                <div><strong>3 možné způsoby jak namíchat směs:</strong></div>
+                <div>Mix 1: 80% listy/byliny/květy, 15% semena, 5% obilniny</div>
+                <div>Mix 2: 80% listy/byliny/květy, 10% semena, 10% sušená zelenina</div>
+                <div>Mix 3: 80% listy/byliny/květy, 10% semena, 10% kořínky a kůry</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="form-group">
+                <div class="form-item">
+                    <label>Počet dní</label>
+                    <input type="number" id="pocetDni" value="1" min="1">
+                </div>
+                <div class="form-item">
+                    <label>Jméno Osmáka</label>
+                    <input type="text" id="jmenoOsmaka" placeholder="Zadejte jméno">
+                </div>
+                <div class="form-item">
+                    <label>Věk</label>
+                    <select id="vek">
+                        <option value="mlade">Mládě</option>
+                        <option value="dospely" selected>Dospělý</option>
+                        <option value="senior">Senior</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>Stav</label>
+                    <select id="stav">
+                        <option value="zdravy" selected>Zdravý</option>
+                        <option value="brezi_kojici">Březí/Kojící</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>Aktivita</label>
+                    <select id="aktivita">
+                        <option value="nizka">Nízká</option>
+                        <option value="normalni" selected>Normální</option>
+                        <option value="vysoka">Vysoká</option>
+                    </select>
+                </div>
+            </div>
+            <div class="buttons">
+                <button class="btn-primary" onclick="pridatOsmaka()">Přidat Osmáka</button>
+                <button class="btn-secondary" onclick="odebriatOsmaka()">Odebrat Osmáka</button>
+            </div>
+
+            <h2 style="color: #333; margin-top: 30px; margin-bottom: 20px;">Výpočet dávky pro zvolený počet dní</h2>
+            <div class="results-table" id="vysledkyTable" style="display: none;">
+                <!-- Tabulka bude vygenerována JavaScriptem -->
+            </div>
+        </div>
+
+        <div class="section generator-section">
+            <h2 style="color: #333; text-align: center; margin-bottom: 30px;">Generátor surovin pro daný výpočet</h2>
+            
+            <div class="season-input">
+                <label style="font-weight: 600; color: #333;">Vyberte sezónu:</label>
+                <select id="sezona">
+                    <option value="leto">Léto</option>
+                    <option value="zima">Zima</option>
+                    <option value="jaro">Jaro</option>
+                    <option value="podzim">Podzim</option>
+                </select>
+                <button class="generate-btn" onclick="generovatSuroviny()">Generuj</button>
+            </div>
+
+            <div class="mixes-container" id="mixesContainer" style="display: none;">
+                <!-- Směsi budou vygenerovány JavaScriptem -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let osmaci = [];
+        let celkovaDavka = 0;
+
+        // Databáze surovin podle sezón
+        const suroviny = {
+            leto: {
+                listy: ['Máta', 'Heřmánek', 'Měsíček', 'Kopřiva', 'Pampeliška', 'Řebříček'],
+                semena: ['Kmín', 'Sezam', 'Lněné semínko', 'Slunečnice', 'Tykev'],
+                obilniny: ['Ječmen', 'Oves', 'Pohanka'],
+                zelenina: ['Okurka', 'Cuketa', 'Mrkev', 'Petržel'],
+                korinky: ['Pampeliška', 'Lopuch', 'Černý kořen']
+            },
+            zima: {
+                listy: ['Heřmánek', 'Máta', 'Šípek', 'Lípa', 'Echinacea'],
+                semena: ['Lněné semínko', 'Sezam', 'Kmín', 'Fenykl'],
+                obilniny: ['Oves', 'Ječmen', 'Žito'],
+                zelenina: ['Mrkev', 'Řepa', 'Celer', 'Petržel'],
+                korinky: ['Zázvor', 'Kurkuma', 'Pampeliška']
+            },
+            jaro: {
+                listy: ['Kopřiva', 'Pampeliška', 'Řebříček', 'Jitrocel', 'Máta'],
+                semena: ['Řepík', 'Chia', 'Kmín', 'Fenykl'],
+                obilniny: ['Pohanka', 'Oves', 'Amarant'],
+                zelenina: ['Mladá mrkev', 'Ředkvičky', 'Salát'],
+                korinky: ['Pampeliška', 'Černý kořen', 'Lopuch']
+            },
+            podzim: {
+                listy: ['Šípek', 'Lípa', 'Heřmánek', 'Máta', 'Echinacea'],
+                semena: ['Slunečnice', 'Tykev', 'Lněné semínko', 'Sezam'],
+                obilniny: ['Oves', 'Ječmen', 'Pohanka'],
+                zelenina: ['Dýně', 'Mrkev', 'Řepa', 'Celer'],
+                korinky: ['Kurkuma', 'Zázvor', 'Pampeliška']
+            }
+        };
+
+        function pridatOsmaka() {
+            const jmeno = document.getElementById('jmenoOsmaka').value || `Osmák ${osmaci.length + 1}`;
+            const vek = document.getElementById('vek').value;
+            const stav = document.getElementById('stav').value;
+            const aktivita = document.getElementById('aktivita').value;
+
+            // Výpočet denní dávky podle tabulky
+            let davka = vypocitatDavku(vek, stav, aktivita);
+
+            const osmak = {
+                jmeno: jmeno,
+                vek: vek,
+                stav: stav,
+                aktivita: aktivita,
+                davka: davka
+            };
+
+            osmaci.push(osmak);
+            aktualizovatTabulku();
+            
+            // Vyčistit pouze jméno
+            document.getElementById('jmenoOsmaka').value = '';
+        }
+
+        function vypocitatDavku(vek, stav, aktivita) {
+            // Březí/kojící samička má speciální hodnoty podobné mláděti
+            if (stav === 'brezi_kojici') {
+                switch (aktivita) {
+                    case 'nizka': return 8;
+                    case 'normalni': return 9;
+                    case 'vysoka': return 10;
+                }
+            }
+            
+            // Podle věku a aktivity
+            switch (vek) {
+                case 'mlade':
+                    switch (aktivita) {
+                        case 'nizka': return 8;
+                        case 'normalni': return 9;
+                        case 'vysoka': return 10;
+                    }
+                    break;
+                case 'dospely':
+                    switch (aktivita) {
+                        case 'nizka': return 7;
+                        case 'normalni': return 8;
+                        case 'vysoka': return 9;
+                    }
+                    break;
+                case 'senior':
+                    switch (aktivita) {
+                        case 'nizka': return 6;
+                        case 'normalni': return 7;
+                        case 'vysoka': return 8;
+                    }
+                    break;
+            }
+            return 8; // výchozí hodnota
+        }
+
+        function odebriatOsmaka() {
+            if (osmaci.length > 0) {
+                osmaci.pop();
+                aktualizovatTabulku();
+            }
+        }
+
+        function aktualizovatTabulku() {
+            const pocetDni = parseInt(document.getElementById('pocetDni').value) || 1;
+            const table = document.getElementById('vysledkyTable');
+
+            if (osmaci.length === 0) {
+                table.style.display = 'none';
+                return;
+            }
+
+            table.style.display = 'block';
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Jméno</th>
+                            <th>Denní dávka (g)</th>
+                            <th colspan="3">Mix 1: 80% listy + 15% semena + 5% obilniny</th>
+                            <th colspan="3">Mix 2: 80% listy + 10% semena + 10% zelenina</th>
+                            <th colspan="3">Mix 3: 80% listy + 10% semena + 10% kořínky a kůry</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th>Listy/květy</th>
+                            <th>Semena</th>
+                            <th>Obilniny</th>
+                            <th>Listy/květy</th>
+                            <th>Semena</th>
+                            <th>Zelenina</th>
+                            <th>Listy/květy</th>
+                            <th>Semena</th>
+                            <th>Kořínky a kůry</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            let celkemListy1 = 0, celkemSemena1 = 0, celkemObiln = 0;
+            let celkemListy2 = 0, celkemSemena2 = 0, celkemZelenina = 0;
+            let celkemListy3 = 0, celkemSemena3 = 0, celkemKorinky = 0;
+
+            osmaci.forEach(osmak => {
+                const celkovaDavka = osmak.davka * pocetDni;
+                
+                // Mix 1: 80% listy, 15% semena, 5% obilniny
+                const listy1 = celkovaDavka * 0.8;
+                const semena1 = celkovaDavka * 0.15;
+                const obilniny = celkovaDavka * 0.05;
+                
+                // Mix 2: 80% listy, 10% semena, 10% zelenina
+                const listy2 = celkovaDavka * 0.8;
+                const semena2 = celkovaDavka * 0.1;
+                const zelenina = celkovaDavka * 0.1;
+                
+                // Mix 3: 80% listy, 10% semena, 10% kořínky
+                const listy3 = celkovaDavka * 0.8;
+                const semena3 = celkovaDavka * 0.1;
+                const korinky = celkovaDavka * 0.1;
+
+                celkemListy1 += listy1;
+                celkemSemena1 += semena1;
+                celkemObiln += obilniny;
+                celkemListy2 += listy2;
+                celkemSemena2 += semena2;
+                celkemZelenina += zelenina;
+                celkemListy3 += listy3;
+                celkemSemena3 += semena3;
+                celkemKorinky += korinky;
+
+                html += `
+                    <tr>
+                        <td><strong>${osmak.jmeno}</strong></td>
+                        <td>${osmak.davka} (${getVekText(osmak.vek)}, ${getStavText(osmak.stav)}, ${getAktivitaText(osmak.aktivita)})</td>
+                        <td>${listy1.toFixed(1)}</td>
+                        <td>${semena1.toFixed(1)}</td>
+                        <td>${obilniny.toFixed(1)}</td>
+                        <td>${listy2.toFixed(1)}</td>
+                        <td>${semena2.toFixed(1)}</td>
+                        <td>${zelenina.toFixed(1)}</td>
+                        <td>${listy3.toFixed(1)}</td>
+                        <td>${semena3.toFixed(1)}</td>
+                        <td>${korinky.toFixed(1)}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        <tr style="background: #f0f0f0; font-weight: bold;">
+                            <td><strong>Celkem</strong></td>
+                            <td></td>
+                            <td>${celkemListy1.toFixed(1)}</td>
+                            <td>${celkemSemena1.toFixed(1)}</td>
+                            <td>${celkemObiln.toFixed(1)}</td>
+                            <td>${celkemListy2.toFixed(1)}</td>
+                            <td>${celkemSemena2.toFixed(1)}</td>
+                            <td>${celkemZelenina.toFixed(1)}</td>
+                            <td>${celkemListy3.toFixed(1)}</td>
+                            <td>${celkemSemena3.toFixed(1)}</td>
+                            <td>${celkemKorinky.toFixed(1)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+
+            table.innerHTML = html;
+
+            // Uložit celkové hodnoty pro generátor
+            window.celkoveHodnoty = {
+                mix1: { listy: celkemListy1, semena: celkemSemena1, obilniny: celkemObiln },
+                mix2: { listy: celkemListy2, semena: celkemSemena2, zelenina: celkemZelenina },
+                mix3: { listy: celkemListy3, semena: celkemSemena3, korinky: celkemKorinky }
+            };
+        }
+
+        function generovatSuroviny() {
+            if (!window.celkoveHodnoty) {
+                alert('Nejprve přidejte alespoň jednoho osmáka!');
+                return;
+            }
+
+            const sezona = document.getElementById('sezona').value;
+            const container = document.getElementById('mixesContainer');
+            const sezonnniSuroviny = suroviny[sezona];
+
+            container.style.display = 'grid';
+
+            let html = '';
+
+            // Mix 1
+            html += generateMixCard('Směs 1 – rozdělení surovin (Mix 1)', 
+                window.celkoveHodnoty.mix1.listy, 
+                window.celkoveHodnoty.mix1.semena, 
+                window.celkoveHodnoty.mix1.obilniny, 
+                sezonnniSuroviny, 'obilniny');
+
+            // Mix 2
+            html += generateMixCard('Směs 2 – rozdělení surovin (Mix 2)', 
+                window.celkoveHodnoty.mix2.listy, 
+                window.celkoveHodnoty.mix2.semena, 
+                window.celkoveHodnoty.mix2.zelenina, 
+                sezonnniSuroviny, 'zelenina');
+
+            // Mix 3
+            html += generateMixCard('Směs 3 – rozdělení surovin (Mix 3)', 
+                window.celkoveHodnoty.mix3.listy, 
+                window.celkoveHodnoty.mix3.semena, 
+                window.celkoveHodnoty.mix3.korinky, 
+                sezonnniSuroviny, 'korinky');
+
+            container.innerHTML = html;
+        }
+
+        function generateMixCard(title, listyAmount, semenaAmount, thirdAmount, sezonnniSuroviny, thirdType) {
+            const listyList = sezonnniSuroviny.listy.slice(0, 4);
+            const semenaList = sezonnniSuroviny.semena.slice(0, 3);
+            const thirdList = sezonnniSuroviny[thirdType].slice(0, 2);
+
+            const listyPerItem = listyAmount / listyList.length;
+            const semenaPerItem = semenaAmount / semenaList.length;
+            const thirdPerItem = thirdAmount / thirdList.length;
+
+            let categoryName = '';
+            switch(thirdType) {
+                case 'obilniny': categoryName = 'Obilniny 5%:'; break;
+                case 'zelenina': categoryName = 'Zelenina 10%:'; break;
+                case 'korinky': categoryName = 'Kořínky/Kůry 10%:'; break;
+            }
+
+            return `
+                <div class="mix-card">
+                    <div class="mix-title">${title}</div>
+                    
+                    <div class="ingredient-category">
+                        <div class="category-title">Listy 80%:</div>
+                        ${listyList.map(item => 
+                            `<div class="ingredient">
+                                <span class="ingredient-name">${item}</span>
+                                <span class="ingredient-amount">${listyPerItem.toFixed(1)} g</span>
+                            </div>`
+                        ).join('')}
+                    </div>
+
+                    <div class="ingredient-category">
+                        <div class="category-title">Semena ${thirdType === 'obilniny' ? '15%' : '10%'}:</div>
+                        ${semenaList.map(item => 
+                            `<div class="ingredient">
+                                <span class="ingredient-name">${item}</span>
+                                <span class="ingredient-amount">${semenaPerItem.toFixed(1)} g</span>
+                            </div>`
+                        ).join('')}
+                    </div>
+
+                    <div class="ingredient-category">
+                        <div class="category-title">${categoryName}</div>
+                        ${thirdList.map(item => 
+                            `<div class="ingredient">
+                                <span class="ingredient-name">${item}</span>
+                                <span class="ingredient-amount">${thirdPerItem.toFixed(1)} g</span>
+                            </div>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getVekText(vek) {
+            switch(vek) {
+                case 'mlade': return 'Mládě';
+                case 'dospely': return 'Dospělý';
+                case 'senior': return 'Senior';
+                default: return vek;
+            }
+        }
+
+        function getStavText(stav) {
+            switch(stav) {
+                case 'zdravy': return 'Zdravý';
+                case 'brezi_kojici': return 'Březí/Kojící';
+                default: return stav;
+            }
+        }
+
+        function getAktivitaText(aktivita) {
+            switch(aktivita) {
+                case 'nizka': return 'Nízká';
+                case 'normalni': return 'Normální';
+                case 'vysoka': return 'Vysoká';
+                default: return aktivita;
+            }
+        }
+
+        // Automaticky aktualizovat při změně počtu dní
+        document.getElementById('pocetDni').addEventListener('input', aktualizovatTabulku);
+    </script>
+</body>
+</html>
