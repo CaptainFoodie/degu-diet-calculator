@@ -1,0 +1,8 @@
+{
+  "name": "degu-diet-calculator",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "echo 'No build step needed'",
+    "vercel-build": "echo 'No build step needed'"
+  }
+}
