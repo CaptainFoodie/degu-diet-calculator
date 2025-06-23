@@ -211,23 +211,9 @@
             <h2 style="color: #333; text-align: center; margin-bottom: 30px;">Generátor surovin pro daný výpočet</h2>
             
             <div style="background: white; border-radius: 15px; padding: 25px; margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                <div class="generator-controls">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <label style="font-weight: 600; color: #333;">Vyberte sezónu:</label>
-                        <select id="sezona">
-                            <option value="leto">Léto</option>
-                            <option value="zima">Zima</option>
-                            <option value="jaro">Jaro</option>
-                            <option value="podzim">Podzim</option>
-                        </select>
-                    </div>
-                    <button class="generate-btn" onclick="generovatSuroviny()">GENERUJ SMĚSI</button>
+                <div class="generator-controls" style="justify-content: center;">
+                    <button class="generate-btn" onclick="generovatSurovinyPodleMixu()">GENERUJ SMĚSI</button>
                     <button class="shuffle-btn" onclick="generovatJinouKombinaci()">JINÁ KOMBINACE</button>
-                </div>
-            </div>
-
-            <div style="background: white; border-radius: 15px; padding: 25px; margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                <div class="generator-controls">
                     <button class="btn-success" onclick="generovatVsechnySezony()">VŠECHNY SEZÓNY</button>
                 </div>
             </div>
@@ -412,13 +398,28 @@
             return shuffleArray(array).slice(0, Math.min(count, array.length));
         }
 
-        function generovatSuroviny() {
+        function generovatSurovinyPodleMixu() {
             if (!window.celkoveHodnoty) {
                 alert('Nejprve přidejte alespoň jednoho osmáka!');
                 return;
             }
 
-            const sezona = document.getElementById('sezona').value;
+            // Určíme sezónu podle typu mixu
+            let sezona = 'leto'; // výchozí
+            
+            // Pokud jsou všichni osmáci stejného typu, použijeme odpovídající sezónu
+            const prvniTyp = osmaci[0]?.typSmesi;
+            const vsichniStejni = osmaci.every(o => o.typSmesi === prvniTyp);
+            
+            if (vsichniStejni) {
+                switch(prvniTyp) {
+                    case 'mix1': sezona = 'jaro'; break;    // klasická s obilninami - celoroční
+                    case 'mix2': sezona = 'leto'; break;    // letní se zeleninou
+                    case 'mix3': sezona = 'zima'; break;    // zimní s kořínky
+                    case 'mix4': sezona = 'podzim'; break;  // univerzální - celoroční
+                }
+            }
+
             const container = document.getElementById('mixesContainer');
             const sezonnniSuroviny = suroviny[sezona];
             const celoziniSuroviny = suroviny.celozini;
@@ -433,23 +434,35 @@
 
             container.style.display = 'grid';
             let html = '';
-            html += generateMixCard('Kombinovaná směs pro ' + getSezonyText(sezona), window.celkoveHodnoty, kombinovaneSuroviny, sezona);
+            
+            // Generujeme název podle typu mixu
+            let nazev = 'Kombinovaná směs';
+            if (vsichniStejni) {
+                switch(prvniTyp) {
+                    case 'mix1': nazev = 'Klasická směs s obilninami'; break;
+                    case 'mix2': nazev = 'Letní směs se zeleninou'; break;
+                    case 'mix3': nazev = 'Zimní směs s kořínky a kůrami'; break;
+                    case 'mix4': nazev = 'Univerzální vyvážená směs'; break;
+                }
+            }
+            
+            html += generateMixCard(nazev, window.celkoveHodnoty, kombinovaneSuroviny, sezona);
 
             container.innerHTML = html;
-            posledniGenerovane = { sezona, kombinovaneSuroviny };
+            posledniGenerovane = { sezona, kombinovaneSuroviny, nazev };
         }
 
         function generovatJinouKombinaci() {
             if (!posledniGenerovane) {
-                generovatSuroviny();
+                generovatSurovinyPodleMixu();
                 return;
             }
 
             const container = document.getElementById('mixesContainer');
-            const { kombinovaneSuroviny, sezona } = posledniGenerovane;
+            const { kombinovaneSuroviny, sezona, nazev } = posledniGenerovane;
 
             let html = '';
-            html += generateMixCard('Kombinovaná směs pro ' + getSezonyText(sezona), window.celkoveHodnoty, kombinovaneSuroviny, sezona);
+            html += generateMixCard(nazev || 'Kombinovaná směs', window.celkoveHodnoty, kombinovaneSuroviny, sezona);
 
             container.innerHTML = html;
         }
@@ -464,10 +477,17 @@
             container.style.display = 'grid';
 
             let html = '';
-            const sezony = ['jaro', 'leto', 'podzim', 'zima'];
+            
+            // Pro každý typ mixu vygenerujeme odpovídající směs
+            const mixy = [
+                { typ: 'mix1', sezona: 'jaro', nazev: 'Klasická směs s obilninami' },
+                { typ: 'mix2', sezona: 'leto', nazev: 'Letní směs se zeleninou' },
+                { typ: 'mix3', sezona: 'zima', nazev: 'Zimní směs s kořínky a kůrami' },
+                { typ: 'mix4', sezona: 'podzim', nazev: 'Univerzální vyvážená směs' }
+            ];
 
-            sezony.forEach(sezona => {
-                const sezonnniSuroviny = suroviny[sezona];
+            mixy.forEach(mix => {
+                const sezonnniSuroviny = suroviny[mix.sezona];
                 const celoziniSuroviny = suroviny.celozini;
 
                 const kombinovaneSuroviny = {
@@ -478,7 +498,7 @@
                     korinky: [...new Set([...sezonnniSuroviny.korinky, ...celoziniSuroviny.korinky])]
                 };
 
-                html += generateMixCard('Kombinovaná směs pro ' + getSezonyText(sezona), window.celkoveHodnoty, kombinovaneSuroviny, sezona);
+                html += generateMixCard(mix.nazev, window.celkoveHodnoty, kombinovaneSuroviny, mix.sezona);
             });
 
             container.innerHTML = html;
@@ -486,7 +506,7 @@
 
         function generateMixCard(title, hodnoty, kombinovaneSuroviny, sezona) {
             let html = '<div class="mix-card">';
-            html += '<div class="mix-title">' + title + ' <span class="season-badge season-' + sezona + '">' + getSezonyText(sezona) + '</span></div>';
+            html += '<div class="mix-title">' + title + '</div>';
             
             // Listy
             if (hodnoty.listy > 0) {
